@@ -1,0 +1,154 @@
+"""Export a word set in Corinthia Bold as SVG path data for the hero's stroke draw.
+
+Writes src/components/product/script-written.ts. Each glyph contour is split at
+its leftmost and rightmost points into two open halves that both run left to
+right, so DrawSVG can grow the outline the way ink flows from a nib. The closed
+contours are kept as one path for the gold fill.
+
+    pip install fonttools uharfbuzz
+    curl -o Corinthia-Bold.ttf https://fonts.gstatic.com/s/corinthia/v13/wEO6EBrAnchaJyPMHE097d8v1A.ttf
+    python scripts/generate-script-word.py Corinthia-Bold.ttf written
+"""
+
+import json
+import sys
+from pathlib import Path
+
+import uharfbuzz as hb
+from fontTools.pens.basePen import BasePen
+from fontTools.ttLib import TTFont
+
+OUT = Path(__file__).resolve().parent.parent / "src/components/product/script-written.ts"
+PAD = 40  # font units around the ink, so the stroke never touches the viewBox edge
+
+
+class SegmentPen(BasePen):
+    """Records contours as explicit segments: ("L", end) | ("Q", c, end) | ("C", c1, c2, end)."""
+
+    def __init__(self, glyphset, dx, dy):
+        super().__init__(glyphset)
+        self.dx, self.dy = dx, dy
+        self.contours = []
+        self.start = None
+        self.current = None
+
+    def _pt(self, p):
+        # Font y points up; SVG y points down.
+        return (round(p[0] + self.dx, 1), round(-(p[1] + self.dy), 1))
+
+    def _moveTo(self, p):
+        self.start = self.current = self._pt(p)
+        self.contours.append({"start": self.start, "segments": []})
+
+    def _lineTo(self, p):
+        self.current = self._pt(p)
+        self.contours[-1]["segments"].append(("L", self.current))
+
+    def _qCurveToOne(self, c, p):
+        self.current = self._pt(p)
+        self.contours[-1]["segments"].append(("Q", self._pt(c), self.current))
+
+    def _curveToOne(self, c1, c2, p):
+        self.current = self._pt(p)
+        self.contours[-1]["segments"].append(("C", self._pt(c1), self._pt(c2), self.current))
+
+    def _closePath(self):
+        if self.current != self.start:
+            self.contours[-1]["segments"].append(("L", self.start))
+
+    _endPath = _closePath
+
+
+def fmt(p):
+    return f"{p[0]:g} {p[1]:g}"
+
+
+def to_d(start, segments):
+    d = [f"M{fmt(start)}"]
+    for seg in segments:
+        d.append(seg[0] + " ".join(fmt(p) for p in seg[1:]))
+    return "".join(d)
+
+
+def reverse(start, segments):
+    """The same open path, walked from its end back to its start."""
+    nodes = [start] + [seg[-1] for seg in segments]
+    out = []
+    for i in range(len(segments) - 1, -1, -1):
+        seg, begin = segments[i], nodes[i]
+        controls = list(seg[1:-1])[::-1]
+        out.append((seg[0], *controls, begin))
+    return nodes[-1], out
+
+
+def halves(contour):
+    """Split a closed contour into two left-to-right open paths."""
+    segments = contour["segments"]
+    nodes = [contour["start"]] + [seg[-1] for seg in segments[:-1]]
+    n = len(segments)
+    left = min(range(n), key=lambda i: (nodes[i][0], nodes[i][1]))
+    right = max(range(n), key=lambda i: (nodes[i][0], -nodes[i][1]))
+    rotated = segments[left:] + segments[:left]
+    split = (right - left) % n
+    upper, lower = rotated[:split], rotated[split:]
+    paths = []
+    if upper:
+        paths.append(to_d(nodes[left], upper))
+    if lower:
+        start, back = reverse(nodes[right], lower)
+        paths.append(to_d(start, back))
+    return [(d, nodes[left][0], nodes[right][0]) for d in paths]
+
+
+def main(font_path, text):
+    blob = hb.Blob.from_file_path(font_path)
+    face = hb.Face(blob)
+    font = hb.Font(face)
+    buf = hb.Buffer()
+    buf.add_str(text)
+    buf.guess_segment_properties()
+    hb.shape(font, buf, {"kern": True, "liga": True, "fina": True})
+
+    tt = TTFont(font_path)
+    glyphset = tt.getGlyphSet()
+    order = tt.getGlyphOrder()
+    contours = []
+    x = 0
+    for info, pos in zip(buf.glyph_infos, buf.glyph_positions):
+        pen = SegmentPen(glyphset, x + pos.x_offset, pos.y_offset)
+        glyphset[order[info.codepoint]].draw(pen)
+        contours += pen.contours
+        x += pos.x_advance
+
+    points = [c["start"] for c in contours] + [
+        p for c in contours for seg in c["segments"] for p in seg[1:]
+    ]
+    min_x = min(p[0] for p in points) - PAD
+    max_x = max(p[0] for p in points) + PAD
+    min_y = min(p[1] for p in points) - PAD
+    max_y = max(p[1] for p in points) + PAD
+
+    strokes = []
+    for contour in contours:
+        for d, x0, x1 in halves(contour):
+            strokes.append({"d": d, "from": round(x0, 1), "to": round(x1, 1)})
+    strokes.sort(key=lambda s: s["from"])
+    fill = "".join(to_d(c["start"], c["segments"]) + "Z" for c in contours)
+
+    data = {
+        "viewBox": [round(min_x, 1), round(min_y, 1), round(max_x - min_x, 1), round(max_y - min_y, 1)],
+        "fill": fill,
+        "strokes": strokes,
+    }
+    OUT.write_text(
+        "// Generated by scripts/generate-script-word.py: do not edit by hand.\n"
+        f'// "{text}" in Corinthia Bold (SIL Open Font License), in font units (1000/em),\n'
+        "// y down, baseline at y = 0. `from`/`to` are each stroke's horizontal extent.\n"
+        f"export const scriptWritten = {json.dumps(data, indent=2)} as const;\n",
+        encoding="utf-8",
+    )
+    print(f"{OUT}: {len(contours)} contours, {len(strokes)} strokes, viewBox {data['viewBox']}")
+
+
+if __name__ == "__main__":
+    main(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else "written")

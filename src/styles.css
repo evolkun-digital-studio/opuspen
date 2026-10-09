@@ -1,0 +1,3910 @@
+@import "tailwindcss" source(none);
+@import "tw-animate-css";
+@source "../src";
+@custom-variant dark (&:is(.dark *));
+
+/* Hiragenda: the handwriting, self-hosted and preloaded in __root.tsx. */
+@font-face {
+  font-family: "Hiragenda";
+  src: url("/fonts/Hiragenda.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* =============================================================================
+   1. TAILWIND THEME BRIDGE
+   Maps the Maison tokens onto the names the shared UI kit (src/components/ui)
+   and the root error pages expect.
+   ========================================================================== */
+@theme inline {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Cormorant Garamond", "Times New Roman", serif;
+  --font-script: "Hiragenda", cursive;
+
+  --color-background: var(--ink);
+  --color-foreground: var(--ivory);
+  --color-primary: var(--gold-soft);
+  --color-primary-foreground: var(--ink);
+  --color-card: var(--obsidian);
+  --color-card-foreground: var(--ivory);
+  --color-popover: var(--obsidian);
+  --color-popover-foreground: var(--ivory);
+  --color-secondary: var(--obsidian);
+  --color-secondary-foreground: var(--ivory);
+  --color-muted: var(--obsidian);
+  --color-muted-foreground: var(--stone);
+  --color-accent: var(--obsidian);
+  --color-accent-foreground: var(--ivory);
+  --color-border: var(--rule);
+  --color-input: var(--rule);
+  --color-ring: var(--gold-soft);
+
+  --color-ink: var(--ink);
+  --color-obsidian: var(--obsidian);
+  --color-ivory: var(--ivory);
+  --color-parchment: var(--parchment);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-emerald: var(--emerald);
+  --color-stone: var(--stone);
+
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+}
+
+/* =============================================================================
+   2. DESIGN TOKENS
+   Dark-led palette; never pure black or white. Raw colour values live here
+   and nowhere else.
+   ========================================================================== */
+:root {
+  /* Palette */
+  --ink: #0b0b0c; /* main background */
+  --obsidian: #141415; /* cards, panels */
+  --shadow: #050506; /* vignettes and cast shadows only */
+  --ivory: #f3eee4; /* light sections, text on dark */
+  --parchment: #e8e0d0; /* cards on ivory */
+  --gold: #b8975a; /* hairlines, numerals, one active state */
+  --gold-soft: #d9c49a; /* gold text on ink (11:1) */
+  --bronze: #7a6232; /* gold text on ivory (5:1) */
+  --bronze-deep: #4f3b17;
+  --bronze-light: #9c7d43;
+  --bronze-mid: #6b5428;
+  --bronze-dark: #4a3816;
+  --emerald: #0e3b2e; /* maison green: the hero, the coffret plate, the engraving preview */
+  --emerald-light: #12503d; /* the lit centre of the hero */
+  --emerald-ink: #07130f; /* where the hero's green falls into ink */
+  --stone: #8c877e; /* secondary text on ink (5.5:1) */
+  --stone-light: #b5afa3; /* secondary text on maison green (5.7:1) */
+  --umber: #5e5a53; /* secondary text on ivory (5.9:1) */
+  --studio: #e5e6e8; /* the coffret photographs' own studio grey */
+  --studio-light: #e8e9eb; /* the lit centre of the coffret stage */
+  --graphite: #4a4a4d; /* secondary text on studio grey (7.5:1) */
+
+  /* Colorways: deep, desaturated; `-sheen` is the lit edge of the lacquer */
+  --obsidian-from: #0b0b0c;
+  --obsidian-to: #1c1c1e;
+  --obsidian-sheen: #4a4a4f;
+  --sapphire-from: #0a1428;
+  --sapphire-to: #1b2e55;
+  --sapphire-sheen: #3d5a96;
+  --bordeaux-from: #1e0710;
+  --bordeaux-to: #4a1424;
+  --bordeaux-sheen: #8a3048;
+  --cognac-from: #1f1108;
+  --cognac-to: #6b3a1c;
+  --cognac-sheen: #b06a36;
+
+  /* Script ink: gold on dark, a deeper bronze on ivory */
+  --ink-gold: linear-gradient(
+    100deg,
+    #8a6a2f 0%,
+    #d9c49a 35%,
+    #f5e6c4 50%,
+    #b8975a 70%,
+    #7a6232 100%
+  );
+  --ink-bronze: linear-gradient(
+    100deg,
+    #4f3b17 0%,
+    #7a6232 35%,
+    #9c7d43 50%,
+    #6b5428 70%,
+    #4a3816 100%
+  );
+  --ink-glow: rgb(217 196 154 / 0.25);
+  --ink-wet: #f5e6c4; /* ink as it leaves the nib, before it settles into gold */
+  /* The hero signature: a quiet, matte champagne gold */
+  --champagne: #b8975a;
+  --champagne-light: #d9c49a;
+  --champagne-deep: #a8874c;
+  --champagne-wet: #e9d9b4;
+  --gold-deep: #8a6a2f;
+  --light: #fffaf0; /* warm white for sheens and sweeps */
+  --rim: #ffd9a3; /* warm rim light on the pen */
+  --sheen: rgb(255 250 240 / 0.28);
+
+  /* Lines */
+  --rule: color-mix(in srgb, var(--gold) 30%, transparent);
+  --hairline-ivory: color-mix(in srgb, var(--ivory) 16%, transparent);
+
+  /* Type */
+  --font-display: "Cormorant Garamond", "Times New Roman", serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-wordmark: "Space Grotesk", var(--font-sans);
+  --font-script: "Hiragenda", cursive;
+
+  /* Header: true white and near-black, the one exception to the palette rule */
+  --header-light: #ffffff;
+  --header-ink: #0a0a0a;
+
+  /* Layout */
+  --gutter: clamp(20px, 4vw, 64px);
+  --section-pad: clamp(120px, 16vh, 220px);
+  --measure: 620px;
+  --radius: 2px;
+  --nav-height: 72px;
+
+  /* Motion: slow and weighty, no bounce */
+  --ease-lux: cubic-bezier(0.77, 0, 0.18, 1);
+  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Texture */
+  --grain-opacity: 0.02;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* =============================================================================
+   3. BASE
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  border-color: var(--rule);
+}
+
+html {
+  background: var(--ink);
+  /* Locking scroll (preloader, dialogs) sets overflow: hidden. Without a
+     reserved gutter, classic scrollbars vanish and the page jumps sideways. */
+  scrollbar-gutter: stable;
+}
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--ivory);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--gold-soft);
+  color: var(--ink);
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+ul,
+ol {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* <Picture> renders <picture>; let the <img> carry all layout. */
+picture {
+  display: contents;
+}
+
+section {
+  position: relative;
+}
+
+:focus-visible {
+  outline: 1px solid var(--gold-soft);
+  outline-offset: 4px;
+}
+
+.section--ivory :focus-visible {
+  outline-color: var(--bronze);
+}
+
+.page {
+  overflow: clip;
+}
+
+/* Lock the page behind open dialogs. */
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
+/* =============================================================================
+   4. TYPOGRAPHY
+   Display: Cormorant Garamond 300/400. Labels: Inter 500 caps, 12px, 0.28em.
+   Body: Inter 300, 15–17px, line-height 1.7. Nothing under 12px.
+   ========================================================================== */
+.display {
+  font-family: var(--font-display);
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+
+.eyebrow,
+.label {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  color: var(--gold-soft);
+}
+
+.numeral {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--gold-soft);
+  font-variant-numeric: lining-nums;
+}
+
+.section--ivory .eyebrow,
+.section--ivory .numeral {
+  color: var(--bronze);
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  /* balance the trailing tracking so the word sits optically centred */
+  padding-left: 0.28em;
+}
+
+/* Handwritten ink (<Script>, Hiragenda). One per screen, 28px and up, beside
+   the serif; about 1.35x the serif around it, line-height 1. */
+.script {
+  --script-ink: var(--ink-gold);
+  position: relative;
+  display: inline-block;
+  font-family: var(--font-script);
+  font-size: 1.35em;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  vertical-align: -0.12em;
+}
+
+.section--ivory .script {
+  --script-ink: var(--ink-bronze);
+}
+
+/* Hiragenda's swashes reach ~1.05em above the baseline and ~0.85em below it,
+   past a 1em line box. The padding keeps them inside the gradient's box (and
+   inside every clip-path inset measured from it); the margin gives the room
+   back so the layout does not move. */
+.script-text {
+  display: inline-block;
+  padding: 0.45em 0.24em 0.6em;
+  margin: -0.45em -0.24em -0.6em;
+  background: var(--script-ink);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 30px var(--ink-glow));
+}
+
+.section--ivory .script-text {
+  filter: none;
+}
+
+/* A gold dot at the right edge of a full-width track; the track slides from
+   -100% to 0 with the writing mask, so the dot rides its leading edge. */
+.script-ink {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.script-ink > span {
+  position: absolute;
+  top: 60%;
+  right: 0;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px;
+  border-radius: 50%;
+  background: #f5e6c4;
+  box-shadow: 0 0 10px 2px var(--ink-glow);
+}
+
+/* Written in by an .is-active ancestor (paper headings, colorway lines). */
+.paper-heading .script-text,
+.collection-line .script-text {
+  clip-path: inset(-60% 104% -60% -20%);
+  transition: clip-path 1.8s cubic-bezier(0.45, 0, 0.55, 1);
+}
+
+.paper-heading.is-active .script-text,
+.collection-line.is-active .script-text {
+  clip-path: inset(-60% -20% -60% -20%);
+  transition-delay: 0.35s;
+}
+
+.paper-heading.is-active .script-ink,
+.collection-line.is-active .script-ink {
+  animation: script-ink 1.8s cubic-bezier(0.45, 0, 0.55, 1) 0.35s both;
+}
+
+@keyframes script-ink {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+    visibility: visible;
+  }
+  12%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+    opacity: 0;
+    visibility: visible;
+  }
+}
+
+/* Section opener: a small gold numeral, then the small-caps label. */
+.opener {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.opener-numeral {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.line-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+}
+
+.line-mask > span {
+  display: block;
+}
+
+.section-header {
+  max-width: var(--measure);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.section-title {
+  margin-top: 24px;
+  font-size: clamp(44px, 6vw, 96px);
+}
+
+.section-lede {
+  max-width: 420px;
+  margin: 28px auto 0;
+  color: var(--stone);
+}
+
+.section-note {
+  margin-top: 96px;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-style: italic;
+  text-align: center;
+  color: var(--umber);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 500;
+  padding: 14px 20px;
+  background: var(--ivory);
+  color: var(--ink);
+  font-size: 14px;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+/* =============================================================================
+   5. SURFACES, LINES & TEXTURE
+   ========================================================================== */
+.section--dark {
+  background: var(--ink);
+  color: var(--ivory);
+}
+
+.section--ivory {
+  --rule: color-mix(in srgb, var(--gold) 55%, transparent);
+  background: var(--ivory);
+  color: var(--ink);
+}
+
+.hairline {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: var(--rule);
+}
+
+.hairline--short {
+  width: 64px;
+  margin: 0 auto;
+}
+
+/* Film grain over everything but dialogs (they sit in the top layer). */
+.page::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  pointer-events: none;
+  background-image: var(--grain);
+  opacity: var(--grain-opacity);
+}
+
+/* Image frames: a slow zoom and a gold inner border on hover. `scale` is its
+   own property, so it composes with the transforms the motion hook sets. */
+.frame {
+  position: relative;
+  overflow: hidden;
+}
+
+.frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgb(184 151 90 / 0.35);
+  opacity: 0;
+  transition: opacity 1.2s var(--ease-settle);
+}
+
+.frame-zoom {
+  width: 100%;
+  height: 100%;
+}
+
+.frame-media {
+  transition: scale 1.2s var(--ease-settle);
+}
+
+@media (hover: hover) {
+  .frame:hover::before {
+    opacity: 1;
+  }
+
+  .frame:hover .frame-media {
+    scale: 1.03;
+  }
+}
+
+/* Soft vignette on dark imagery. */
+.craft-figure::after,
+.paper-frames::after,
+.collection-backdrops::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 75% 70% at 50% 50%,
+    transparent 55%,
+    color-mix(in srgb, var(--shadow) 55%, transparent) 100%
+  );
+}
+
+/* =============================================================================
+   6. BUTTONS & LINKS
+   Gold outline; gold fills in from the left on hover (clip-path).
+   ========================================================================== */
+.btn-lux {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 28px;
+  overflow: hidden;
+  border: 1px solid var(--gold);
+  border-radius: var(--radius);
+  color: var(--gold-soft);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color 0.9s var(--ease-lux);
+}
+
+.btn-lux::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--gold);
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.9s var(--ease-lux);
+}
+
+.btn-lux:hover,
+.btn-lux:focus-visible {
+  color: var(--ink);
+}
+
+.btn-lux:hover::before,
+.btn-lux:focus-visible::before {
+  clip-path: inset(0 0 0 0);
+}
+
+.btn-lux--small {
+  min-height: 44px;
+  padding: 0 20px;
+}
+
+.btn-lux--block {
+  width: 100%;
+}
+
+/* "Discover": small caps over a hairline; gold draws across it on hover. */
+.link-discover {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  color: var(--ivory);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.link-discover::before,
+.link-discover::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0.28em; /* the trailing tracking */
+  bottom: 10px;
+  height: 1px;
+}
+
+.link-discover::before {
+  background: color-mix(in srgb, currentColor 28%, transparent);
+}
+
+.link-discover::after {
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.9s var(--ease-lux);
+}
+
+.link-discover:hover::after,
+.link-discover:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.section--ivory .link-discover {
+  color: var(--ink);
+}
+
+.icon-button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  transition: border-color 0.9s var(--ease-lux);
+}
+
+.icon-button:hover {
+  border-color: var(--gold);
+}
+
+.icon-close {
+  position: relative;
+  width: 16px;
+  height: 16px;
+}
+
+.icon-close::before,
+.icon-close::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--gold-soft);
+  transform: rotate(45deg);
+}
+
+.icon-close::after {
+  transform: rotate(-45deg);
+}
+
+/* =============================================================================
+   7. CREST
+   Strokes carry pathLength 1, so dasharray 1 draws them whole.
+   ========================================================================== */
+.crest {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--crest-stroke, 1);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.crest > * {
+  stroke-dasharray: 1;
+}
+
+/* The rings run thin, medium, thin. */
+.crest .crest-ring--medium {
+  stroke-width: calc(var(--crest-stroke, 1) * 2.2);
+}
+
+/* =============================================================================
+   9. PRELOADER
+   Two ink panels meet at a horizontal seam, each carrying a guilloché at 3%
+   centred on it. A gold drop swells there and stretches into a hairline; the
+   crest and wordmark sit above it, the house line below. The panels then part
+   up and down. Only the ink screen shows until the motion hook plays the
+   mark, so nothing jumps when it takes over; if scripts never run, the
+   failsafe animation clears the screen after 7s.
+   ========================================================================== */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  pointer-events: none;
+  animation: preloader-failsafe 0.8s ease 7s forwards;
+}
+
+.preloader-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50.1%;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+.preloader-panel--top {
+  top: 0;
+}
+
+.preloader-panel--bottom {
+  bottom: 0;
+}
+
+/* Centred on the seam, so the pattern is whole until the panels part. */
+.preloader-guilloche {
+  position: absolute;
+  left: 50%;
+  width: max(140vw, 140vh);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  background: url("./assets/guilloche.svg") center / contain no-repeat;
+  opacity: 0.03;
+}
+
+.preloader-panel--top .preloader-guilloche {
+  top: 100%;
+}
+
+.preloader-panel--bottom .preloader-guilloche {
+  top: 0;
+}
+
+.preloader-upper,
+.preloader-tagline,
+.preloader-line {
+  visibility: hidden;
+}
+
+.preloader-upper {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26px;
+  translate: -50% 0;
+  color: var(--gold-soft);
+}
+
+.preloader-crest {
+  width: 64px;
+  height: 64px;
+  --crest-stroke: 0.9;
+}
+
+/* The wordmark rises through this mask. */
+.preloader-wordmark-mask {
+  display: block;
+  overflow: hidden;
+  padding-top: 0.12em;
+}
+
+.preloader-wordmark {
+  display: block;
+  padding-left: 0.5em; /* balances the trailing tracking */
+  color: var(--ivory);
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 300;
+  letter-spacing: 0.5em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.preloader-tagline {
+  position: absolute;
+  top: 26px;
+  left: 50%;
+  translate: -50% 0;
+  padding-left: 0.2em;
+  color: var(--stone);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-variant: small-caps;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  white-space: nowrap;
+  text-transform: lowercase;
+}
+
+/* The drop: a 440×6 ellipse shown at 6×6 (a circle), then stretched to 440×1. */
+.preloader-line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(440px, 76vw);
+  height: 6px;
+  margin: -3px 0 0 calc(min(440px, 76vw) / -2);
+  border-radius: 50%;
+  background: var(--gold-soft);
+  transform: scale(1, 0.1667);
+}
+
+@keyframes preloader-failsafe {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* =============================================================================
+   10. HEADER & MENU
+   Fixed and fully transparent. The motion hook hides it at the hero's exit,
+   brings it back on scroll up, and sets .nav--dark over light sections.
+   ========================================================================== */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  height: var(--nav-height);
+  padding: 0 32px;
+  color: var(--header-light);
+  transition: color 0.4s var(--ease-settle);
+}
+
+.nav--dark {
+  color: var(--header-ink);
+}
+
+.nav[data-hidden] {
+  pointer-events: none;
+}
+
+.nav-wordmark {
+  font-family: var(--font-wordmark);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.nav-links {
+  margin-left: 48px;
+}
+
+.nav-links ul {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  transition: opacity 0.35s var(--ease-settle);
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 11px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s var(--ease-settle);
+}
+
+.nav-link:hover::after,
+.nav-link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* The hovered link stays bright; its siblings step back. */
+.nav-links ul:has(.nav-link:hover) .nav-link:not(:hover) {
+  opacity: 0.6;
+}
+
+/* currentColor: white over dark sections, ink over light ones. */
+.nav-wordmark:focus-visible,
+.nav-link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+
+/* Menu icon + order button on a white pill that keeps its colours in every tone. */
+.nav-pill {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  padding: 5px;
+  border-radius: 999px;
+  background: var(--header-light);
+  color: var(--header-ink);
+}
+
+.nav-icon-button {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  transition: background-color 0.35s var(--ease-settle);
+}
+
+.nav-icon-button:hover {
+  background: color-mix(in srgb, var(--header-ink) 7%, transparent);
+}
+
+.nav-burger {
+  position: relative;
+  width: 16px;
+  height: 8px;
+}
+
+.nav-burger span {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  border-radius: 1px;
+  background: currentColor;
+  transition: transform 0.45s var(--ease-settle);
+}
+
+.nav-burger span:first-child {
+  top: 0;
+}
+
+.nav-burger span:last-child {
+  bottom: 0;
+}
+
+.nav-order {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--header-ink);
+  color: var(--header-light);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  transition:
+    background-color 0.35s var(--ease-settle),
+    color 0.35s var(--ease-settle),
+    box-shadow 0.35s var(--ease-settle);
+}
+
+.nav-order:hover {
+  background: var(--header-light);
+  color: var(--header-ink);
+  box-shadow: inset 0 0 0 1px var(--header-ink);
+}
+
+.nav-order-dot {
+  display: inline-block;
+  transition: transform 0.35s var(--ease-settle);
+}
+
+.nav-order:hover .nav-order-dot {
+  transform: translateX(3px);
+}
+
+/* Inside the 5px pill padding, so the ring never spills onto the page. */
+.nav-icon-button:focus-visible,
+.nav-order:focus-visible {
+  outline: 2px solid var(--header-ink);
+  outline-offset: 2px;
+}
+
+/* Full-screen menu. It mirrors the header row, so the icon crosses into an X
+   in place; links rise from their masks. */
+.menu {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0 0 40px;
+  border: 0;
+  background: var(--header-light);
+  color: var(--header-ink);
+  opacity: 0;
+  transition:
+    opacity 0.4s var(--ease-settle),
+    display 0.5s allow-discrete,
+    overlay 0.5s allow-discrete;
+}
+
+.menu[open] {
+  display: flex;
+  flex-direction: column;
+  opacity: 1;
+}
+
+@starting-style {
+  .menu[open] {
+    opacity: 0;
+  }
+}
+
+.menu::backdrop {
+  background: transparent;
+}
+
+.menu-top {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  height: var(--nav-height);
+  padding: 0 32px;
+}
+
+.menu-top .nav-pill {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--header-ink) 12%, transparent);
+}
+
+.menu[open] .nav-burger span:first-child {
+  transform: translateY(3.25px) rotate(45deg);
+}
+
+.menu[open] .nav-burger span:last-child {
+  transform: translateY(-3.25px) rotate(-45deg);
+}
+
+@starting-style {
+  .menu[open] .nav-burger span {
+    transform: none;
+  }
+}
+
+.menu-list {
+  display: grid;
+  gap: 4px;
+  margin-top: 48px;
+  padding: 0 32px;
+}
+
+.menu-link {
+  display: block;
+  padding: 4px 0;
+  font-family: var(--font-display);
+  font-size: 44px;
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.menu-link:focus-visible {
+  outline: 2px solid var(--header-ink);
+  outline-offset: 4px;
+}
+
+.menu-link .line-mask > span {
+  transform: translateY(105%);
+  transition: transform 0.9s var(--ease-settle) calc(0.1s + var(--i, 0) * 0.08s);
+}
+
+.menu[open] .menu-link .line-mask > span {
+  transform: none;
+}
+
+@starting-style {
+  .menu[open] .menu-link .line-mask > span {
+    transform: translateY(105%);
+  }
+}
+
+/* Tighter rhythm so all four links still fit beside the pill. */
+@media (max-width: 960px) {
+  .nav,
+  .menu-top {
+    padding: 0 24px;
+  }
+
+  .nav-links {
+    margin-left: 32px;
+  }
+
+  .nav-links ul {
+    gap: 24px;
+  }
+
+  /* Reads "Order • € 300"; screen readers still hear the product name. */
+  .nav-order-product {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .menu-list {
+    padding: 0 24px;
+  }
+}
+
+@media (max-width: 700px) {
+  .nav,
+  .menu-top {
+    padding: 0 16px;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .nav-icon-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .menu-list {
+    padding: 0 16px;
+  }
+}
+
+/* =============================================================================
+   11. HERO
+   The pen signs the Maison's name. Maison green falling into ink, a slowly
+   turning guilloché, a breathing shaft of light, and one centred column: the
+   house line, the signature "Opus" (its centre at 44% of the hero), the line,
+   a gold rule and the actions. The pen (pen-uncapped, its native 30.6deg)
+   keeps its size, min(62vw, 1000px), and is only ever moved: it writes the
+   signature, then rests upper right, clear of every word; hero-layout.ts
+   finds the spot. Static and complete by default; the motion hook
+   (hero-motion.ts) plays the intro and scroll-out over it.
+   ========================================================================== */
+.hero {
+  --hero-dusk: 0; /* 0 → 1 on scroll-out: the green darkens to ink */
+  --hero-fit: 1; /* < 1 only if the column must shrink to fit (hero-layout.ts) */
+  --pen-w: min(62vw, 1000px);
+  --pen-h: calc(var(--pen-w) * 0.6114); /* 911 / 1490 */
+  /* Where the nib rests; hero-layout.ts refines it so nothing is covered. */
+  --pen-x: 68%;
+  --pen-y: 34%;
+  --sig-h: calc(clamp(120px, 22vh, 220px) * var(--hero-fit));
+  --sig-centre: 44%;
+  --headline-size: calc(clamp(28px, min(3.2vw, 5vh), 52px) * var(--hero-fit));
+  --col-gap: calc(clamp(14px, 2.4vh, 28px) * var(--hero-fit));
+  --foot-h: 72px;
+  height: 100svh;
+  min-height: 600px;
+  /* Clipped sideways only: the pen's barrel may break the top of the frame
+     while it writes, and nothing near the signature is ever cut. */
+  overflow-x: clip;
+  overflow-y: visible;
+  isolation: isolate;
+  background: radial-gradient(
+    120% 90% at 50% 35%,
+    var(--emerald-light) 0%,
+    var(--emerald) 38%,
+    var(--emerald-ink) 75%,
+    var(--shadow) 100%
+  );
+  color: var(--ivory);
+}
+
+/* Decorative layers stay inside the hero, which only clips sideways. */
+.hero-backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hero-backdrop > *,
+.hero-backdrop::after {
+  position: absolute;
+  inset: 0;
+}
+
+/* Optional film (src/assets/hero-film.mp4) under a green-to-ink veil. */
+.hero-film {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-film-veil {
+  background: linear-gradient(
+    170deg,
+    color-mix(in srgb, var(--emerald) 55%, transparent),
+    color-mix(in srgb, var(--emerald-ink) 55%, transparent)
+  );
+}
+
+/* Gold guilloché at 4%, one turn every four minutes. */
+.hero-guilloche {
+  inset: 42% auto auto 50%;
+  width: max(150vw, 150vh);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  animation: hero-turn 240s linear infinite;
+}
+
+.hero-guilloche::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("./assets/guilloche.svg") center / contain no-repeat;
+  opacity: 0.04;
+}
+
+@keyframes hero-turn {
+  to {
+    rotate: 360deg;
+  }
+}
+
+/* A shaft of light from the top left, breathing between 8% and 14%. The
+   wrapper blends (screen) and carries the intro fade and pointer depth. */
+.hero-shaft {
+  mix-blend-mode: screen;
+}
+
+.hero-shaft-light {
+  position: absolute;
+  top: -35%;
+  left: 2%;
+  width: 34%;
+  height: 170%;
+  rotate: -34deg;
+  transform-origin: top center;
+  background: linear-gradient(
+    to bottom,
+    var(--parchment) 0%,
+    color-mix(in srgb, var(--parchment) 40%, transparent) 45%,
+    transparent 85%
+  );
+  filter: blur(56px);
+  opacity: 0.08;
+  animation: hero-breathe 8s ease-in-out infinite alternate;
+}
+
+@keyframes hero-breathe {
+  to {
+    opacity: 0.14;
+  }
+}
+
+.hero-vignette {
+  background: radial-gradient(
+    ellipse 80% 75% at 50% 42%,
+    transparent 48%,
+    color-mix(in srgb, var(--shadow) 60%, transparent) 100%
+  );
+}
+
+/* Scroll-out: ink rises through every layer behind the pen. */
+.hero-backdrop::after {
+  content: "";
+  background: var(--ink);
+  opacity: var(--hero-dusk);
+}
+
+/* The stage: the pen. It sits between the signature (below it, so the nib
+   writes on top of the ink) and the words and actions (above it). */
+.hero-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* The pen's box: the size of the cutout, its tip on --pen-x / --pen-y.
+   Every wrapper inside fills it, so each can own one transform. */
+.hero-pen-scroll {
+  position: absolute;
+  left: calc(var(--pen-x) - var(--pen-w) * 0.004);
+  top: calc(var(--pen-y) - var(--pen-h) * 0.984);
+  width: var(--pen-w);
+  height: var(--pen-h);
+  transform-origin: 0.4% 98.4%;
+}
+
+.hero-pen-parallax,
+.hero-pen-float,
+.hero-pen-write,
+.hero-pen-lift,
+.hero-pen,
+.hero-shadows {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-pen-image {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Realism layers, each clipped to the pen's own silhouette, so no rectangle
+   can ever show. */
+.hero-pen-tint,
+.hero-pen-rim,
+.hero-specular,
+.hero-sheen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask: url("./assets/pen-uncapped.webp") 0 0 / 100% 100% no-repeat;
+  mask: url("./assets/pen-uncapped.webp") 0 0 / 100% 100% no-repeat;
+}
+
+/* The green of the room, reflected in the metal. */
+.hero-pen-tint {
+  background: var(--emerald);
+  mix-blend-mode: soft-light;
+  opacity: 0.3;
+}
+
+/* Warm rim light along the upper edges: the silhouette minus itself
+   shifted down and right leaves a hairline crescent on the lit side. */
+.hero-pen-rim {
+  --rim-x: calc(var(--pen-w) * 0.0035);
+  --rim-y: calc(var(--pen-w) * 0.006);
+  background: var(--rim);
+  mix-blend-mode: screen;
+  opacity: 0.35;
+  -webkit-mask:
+    url("./assets/pen-uncapped.webp") 0 0 / 100% 100% no-repeat,
+    url("./assets/pen-uncapped.webp") var(--rim-x) var(--rim-y) / 100% 100% no-repeat;
+  -webkit-mask-composite: source-out;
+  mask:
+    url("./assets/pen-uncapped.webp") 0 0 / 100% 100% no-repeat subtract,
+    url("./assets/pen-uncapped.webp") var(--rim-x) var(--rim-y) / 100% 100% no-repeat;
+}
+
+/* A permanent, faint specular line along the top of the barrel. The
+   gradient runs across the barrel (149.4deg); 47.4% is its upper third. */
+.hero-specular,
+.hero-sheen {
+  mix-blend-mode: screen;
+}
+
+.hero-specular-line {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(149.4deg, transparent 46.6%, var(--light) 47.4%, transparent 48.4%);
+  opacity: 0.12;
+}
+
+/* The sheen: a soft band across the barrel, about 45% of the pen's length,
+   sent along it now and then by the motion hook. Hidden at rest. */
+.hero-sheen-band {
+  position: absolute;
+  inset: -50%;
+  background: linear-gradient(59.4deg, transparent 39%, var(--sheen) 50%, transparent 61%);
+  visibility: hidden;
+}
+
+/* Shadows are their own elements under the pen: a tight contact shadow and a
+   wide ambient one further down, both along the pen's axis. They travel with
+   it (inside .hero-pen-write) and their softness is in the gradient, not a
+   filter, so nothing that moves during the write carries a filter. */
+.hero-shadows {
+  transform-origin: 0.4% 98.4%;
+}
+
+.hero-shadow {
+  position: absolute;
+  left: 50.3%;
+  border-radius: 50%;
+  translate: -50% -50%;
+  rotate: -30.6deg;
+}
+
+.hero-shadow--contact {
+  top: 56%;
+  width: 104%;
+  height: calc(var(--pen-w) * 0.09);
+  background: radial-gradient(closest-side, var(--shadow) 30%, transparent);
+  opacity: 0.55;
+}
+
+.hero-shadow--ambient {
+  top: calc(54% + 50px);
+  width: 116%;
+  height: calc(var(--pen-w) * 0.26);
+  background: radial-gradient(closest-side, var(--shadow), transparent);
+  opacity: 0.35;
+}
+
+/* The column: centred, the signature's centre on --sig-centre. It makes no
+   stacking context, so the signature (under the pen) and the words and
+   actions (above it) interleave with the stage. */
+.hero-column {
+  position: absolute;
+  top: calc(var(--sig-centre) - var(--sig-h) / 2);
+  right: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 var(--gutter);
+  text-align: center;
+  pointer-events: none;
+}
+
+.hero-column a,
+.hero-column button {
+  pointer-events: auto;
+}
+
+/* The signature: --sig-h tall, its swashes free (no clipping ancestor; the
+   padding is given back by the margin, so it does not move the layout). */
+.hero-signature {
+  position: relative;
+  z-index: 1;
+  display: block;
+  flex: none;
+  padding-block: 0.2em;
+  margin-block: -0.2em;
+  font-size: calc(var(--sig-h) / var(--sig-box-h));
+  overflow: visible;
+  box-sizing: content-box;
+}
+
+.hero-title {
+  position: relative;
+  z-index: 3;
+  margin-top: var(--col-gap);
+  color: var(--ivory);
+  font-size: var(--headline-size);
+  font-weight: 300;
+  line-height: 1.15;
+}
+
+/* One line on wide screens; each half rises through its own mask. */
+.hero-title-visual {
+  display: block;
+  white-space: nowrap;
+}
+
+.hero-title .line-mask {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.hero-actions {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 36px;
+  min-height: 48px;
+  margin-top: clamp(24px, 3.5vh, 40px);
+}
+
+/* The signature's ink: a quiet, matte champagne gold. */
+.hero .ink-word {
+  --ink-1: var(--champagne);
+  --ink-2: var(--champagne-light);
+  --ink-3: var(--champagne-light);
+  --ink-4: color-mix(in srgb, var(--champagne-light) 45%, var(--champagne-deep));
+  --ink-5: var(--champagne-deep);
+  --ink-fresh: var(--champagne-wet);
+}
+
+/* One slow, faint light across the finished signature. */
+.hero .ink-stop--peak {
+  stop-opacity: 0.35;
+}
+
+/* Caption, scroll cue, film control along the bottom edge. */
+.hero-foot {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+  height: var(--foot-h);
+  padding: 0 var(--gutter) 20px;
+  pointer-events: none;
+}
+
+.hero-caption {
+  justify-self: start;
+  max-width: 400px;
+  padding-bottom: 8px;
+  color: var(--stone-light);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.hero-scroll {
+  display: flex;
+  justify-content: center;
+  min-width: 48px;
+  min-height: 48px;
+  pointer-events: auto;
+}
+
+.hero-scroll-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(var(--gold), transparent);
+  transform-origin: top;
+  animation: hero-scroll-cue 2.8s var(--ease-lux) infinite;
+}
+
+@keyframes hero-scroll-cue {
+  0% {
+    transform: scaleY(0);
+  }
+  50% {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  50.1% {
+    transform-origin: bottom;
+  }
+  100% {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+}
+
+.hero-film-toggle {
+  position: relative;
+  display: grid;
+  justify-self: end;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 4px;
+  border: 1px solid color-mix(in srgb, var(--gold) 70%, transparent);
+  border-radius: 50%;
+  color: var(--gold-soft);
+  pointer-events: auto;
+  transition: border-color 0.9s var(--ease-lux);
+}
+
+/* 48px to the finger, 40px to the eye. */
+.hero-film-toggle::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+}
+
+.hero-film-toggle:hover {
+  border-color: var(--gold-soft);
+}
+
+.icon-pause {
+  width: 8px;
+  height: 10px;
+  border-inline: 2px solid currentColor;
+}
+
+.icon-play {
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  border-block: 5px solid transparent;
+  border-left: 8px solid currentColor;
+}
+
+/* Fine pointers: a gold ring over the resting pen (its silhouette, tested in
+   the motion hook), which then stands in for the cursor. */
+.hero[data-ring] {
+  cursor: none;
+}
+
+.hero-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  border: 1px solid var(--gold-soft);
+  border-radius: 50%;
+  color: var(--gold-soft);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.hero-cursor span {
+  padding-left: 0.24em;
+}
+
+/* Off screen or in a hidden tab, the ambient loops rest. */
+.hero[data-paused] :is(.hero-guilloche, .hero-shaft-light, .hero-scroll-line) {
+  animation-play-state: paused;
+}
+
+/* Small screens: the signature at 38%, no wider than 80vw; the line on two
+   lines; the pen rests above, upper right. */
+@media (max-width: 699px) {
+  .hero {
+    --sig-centre: 38%;
+    --foot-h: 64px;
+  }
+
+  .hero-signature {
+    font-size: min(calc(var(--sig-h) / var(--sig-box-h)), calc(80vw / var(--sig-box-w)));
+  }
+
+  .hero-title-visual {
+    white-space: normal;
+  }
+
+  .hero-title .line-mask {
+    display: block;
+  }
+
+  .hero-actions {
+    gap: 12px 24px;
+  }
+
+  .hero-foot {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .hero-caption {
+    justify-self: center;
+    padding-bottom: 0;
+    font-size: 15px;
+    text-align: center;
+  }
+
+  .hero-scroll {
+    display: none;
+  }
+
+  .hero-film-toggle {
+    position: absolute;
+    right: var(--gutter);
+    bottom: 20px;
+  }
+}
+
+/* =============================================================================
+   12. OVERTURE
+   Ivory curtain over the pinned hero (clip-path driven by the motion hook).
+   ========================================================================== */
+.overture {
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  min-height: 110svh;
+  padding: var(--section-pad) var(--gutter);
+}
+
+.overture-inner {
+  max-width: 980px;
+  text-align: center;
+}
+
+.overture-text {
+  margin-top: 56px;
+  font-size: clamp(32px, 3.9vw, 56px);
+  line-height: 1.28;
+}
+
+/* The Atelier signs beneath the paragraph, a little off the level. */
+.overture-signoff {
+  margin-top: 36px;
+  font-size: clamp(40px, 4.4vw, 68px);
+  line-height: 1;
+  rotate: -3deg;
+}
+
+.overture-est {
+  margin-top: 56px;
+  font-size: 22px;
+  letter-spacing: 0.24em;
+}
+
+/* =============================================================================
+   13. CRAFT
+   Stacked chapters by default. With [data-pinned] (desktop + motion) the
+   chapters share one stage and crossfade through horizontal blinds.
+   ========================================================================== */
+.craft {
+  padding: var(--section-pad) var(--gutter);
+  overflow: hidden;
+}
+
+.craft-guilloche {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: url("./assets/guilloche.svg") 78% 50% / min(1100px, 130vw) no-repeat;
+  opacity: 0.12;
+}
+
+.craft-inner {
+  position: relative;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.craft-header {
+  margin-bottom: 96px;
+  text-align: center;
+}
+
+.craft-rail,
+.craft-blinds {
+  display: none;
+}
+
+.craft-chapters {
+  display: grid;
+  gap: 160px;
+}
+
+.craft-chapter {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--gutter);
+  align-items: center;
+}
+
+.craft-copy {
+  grid-column: 1 / span 5;
+  max-width: 460px;
+}
+
+.craft-title {
+  margin-top: 20px;
+  font-size: clamp(40px, 4.6vw, 72px);
+}
+
+.craft-body {
+  max-width: 420px;
+  margin-top: 28px;
+  color: var(--stone);
+  font-size: 17px;
+}
+
+.craft-figure {
+  position: relative;
+  grid-column: 7 / -1;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--obsidian);
+}
+
+.craft-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Keep the tip clear of the frame, including the inset reveal and chapter zoom. */
+.craft-figure--nib .craft-image {
+  padding: 6%;
+  object-fit: contain;
+  transform-origin: 20% 75%;
+}
+
+/* A margin note written over the third chapter's image. */
+.craft-note {
+  position: absolute;
+  bottom: 9%;
+  left: 7%;
+  z-index: 2;
+  font-family: var(--font-display);
+  font-size: clamp(38px, 3.4vw, 58px);
+  line-height: 1;
+  rotate: -5deg;
+  pointer-events: none;
+}
+
+.craft-note .script-text {
+  filter: drop-shadow(0 2px 14px rgb(5 5 6 / 0.6)) drop-shadow(0 0 30px var(--ink-glow));
+}
+
+.craft[data-pinned] {
+  height: 100svh;
+  padding-top: calc(var(--nav-height) + 32px);
+  padding-bottom: 56px;
+}
+
+.craft[data-pinned] .craft-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.craft[data-pinned] .craft-header {
+  margin-bottom: 32px;
+}
+
+.craft[data-pinned] .craft-stage {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: var(--gutter);
+  flex: 1;
+  min-height: 0;
+}
+
+.craft[data-pinned] .craft-rail {
+  display: flex;
+  gap: 20px;
+}
+
+.craft-rail-track {
+  position: relative;
+  width: 1px;
+  background: var(--rule);
+}
+
+.craft-rail-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--gold);
+  transform: scaleY(0);
+  transform-origin: top;
+}
+
+.craft-rail-marks {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--stone);
+}
+
+.craft-rail-marks li {
+  transition: color 1.2s var(--ease-lux);
+}
+
+.craft-rail-marks .is-active {
+  color: var(--gold-soft);
+}
+
+.craft[data-pinned] .craft-chapters {
+  grid-template-columns: 5fr 6fr;
+  grid-template-rows: minmax(0, 1fr);
+  gap: var(--gutter);
+  height: 100%;
+  align-items: center;
+}
+
+.craft[data-pinned] .craft-chapter {
+  display: contents;
+}
+
+.craft[data-pinned] .craft-copy {
+  grid-area: 1 / 1;
+}
+
+.craft[data-pinned] .craft-figure,
+.craft[data-pinned] .craft-blinds {
+  grid-area: 1 / 2;
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+.craft[data-pinned] .craft-blinds {
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.craft-blind {
+  flex: 1;
+  margin-bottom: -1px; /* no seams between strips */
+  background: var(--ink);
+  transform: scaleY(0);
+}
+
+@media (max-width: 900px) {
+  .craft-header {
+    margin-bottom: 64px;
+  }
+
+  .craft-chapters {
+    gap: 96px;
+  }
+
+  .craft-chapter {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .craft-copy,
+  .craft-figure {
+    grid-column: 1;
+  }
+
+  .craft-body {
+    font-size: 16px;
+  }
+}
+
+/* =============================================================================
+   15. MANIFESTO
+   ========================================================================== */
+.manifesto {
+  padding: var(--section-pad) var(--gutter);
+}
+
+.manifesto-statement {
+  max-width: 1100px;
+  margin: 72px auto 0;
+  font-size: clamp(34px, 5vw, 76px);
+  font-style: italic;
+  line-height: 1.16;
+  text-align: center;
+}
+
+.manifesto-word {
+  display: inline-block;
+}
+
+.manifesto-word.is-key {
+  color: var(--gold-soft);
+}
+
+.manifesto-lower {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--gutter);
+  max-width: 1200px;
+  margin: 160px auto 0;
+}
+
+.manifesto-copy {
+  display: grid;
+  align-content: start;
+  gap: 24px;
+  grid-column: 1 / span 4;
+  color: var(--stone);
+}
+
+.audience {
+  grid-column: 6 / -1;
+}
+
+.audience-title {
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--gold-soft);
+}
+
+.audience-row {
+  display: grid;
+  grid-template-columns: 1fr auto 24px;
+  align-items: center;
+  gap: 24px;
+  min-height: 104px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.audience-name {
+  font-size: clamp(28px, 3vw, 44px);
+  transition: transform 0.6s ease-out;
+}
+
+.audience-line {
+  color: var(--stone);
+  font-size: 15px;
+  transition: color 0.6s ease-out;
+}
+
+.audience-arrow {
+  color: var(--gold-soft);
+  opacity: 0;
+  transform: translateX(-12px);
+  transition:
+    opacity 0.9s var(--ease-lux),
+    transform 1.2s var(--ease-lux);
+}
+
+.audience-row:hover .audience-name {
+  transform: translateX(8px);
+}
+
+.audience-row:hover .audience-line {
+  color: var(--ivory);
+}
+
+.audience-row:hover .audience-arrow {
+  opacity: 1;
+  transform: none;
+}
+
+@media (max-width: 900px) {
+  .manifesto-lower {
+    grid-template-columns: 1fr;
+    gap: 72px;
+    margin-top: 96px;
+  }
+
+  .manifesto-copy,
+  .audience {
+    grid-column: 1;
+  }
+
+  .audience-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    min-height: 0;
+    padding: 24px 0;
+  }
+
+  .audience-arrow {
+    display: none;
+  }
+}
+
+/* =============================================================================
+   16. PAPER STORY
+   Pinned on desktop; headings crossfade through blur, frames through zoom.
+   ========================================================================== */
+.paper {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 40px;
+  height: 100svh;
+  min-height: 720px;
+  padding: calc(var(--nav-height) + 40px) var(--gutter) 48px;
+}
+
+.paper-headings {
+  display: grid;
+  margin-top: 20px;
+}
+
+.paper-heading {
+  grid-area: 1 / 1;
+  font-size: clamp(34px, 4.4vw, 68px);
+  opacity: 0;
+  filter: blur(8px);
+  transition:
+    opacity 1.4s var(--ease-lux),
+    filter 1.4s var(--ease-lux);
+}
+
+.paper-heading.is-active {
+  opacity: 1;
+  filter: blur(0);
+}
+
+.paper-stage {
+  position: relative;
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.paper-frames {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: var(--radius);
+}
+
+.paper-frame {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: scale(1.04);
+  transition:
+    opacity 1.6s var(--ease-lux),
+    transform 2.2s var(--ease-lux),
+    scale 1.2s var(--ease-settle);
+}
+
+.paper-frame.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.paper-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.paper-panel {
+  position: absolute;
+  right: 32px;
+  bottom: 32px;
+  z-index: 2;
+  width: min(360px, calc(100% - 40px));
+  padding: 32px;
+  border: 1px solid color-mix(in srgb, var(--gold) 50%, transparent);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--obsidian) 94%, transparent);
+}
+
+.paper-panel-title {
+  margin: 16px 0 14px;
+  font-size: 28px;
+  font-weight: 400;
+}
+
+.paper-panel p {
+  color: var(--stone);
+  font-size: 15px;
+}
+
+.paper-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.paper-steps {
+  display: flex;
+  gap: 16px;
+  width: min(480px, 100%);
+}
+
+.paper-step {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: 48px;
+}
+
+.paper-step-line {
+  position: relative;
+  width: 100%;
+  height: 1px;
+  background: var(--rule);
+}
+
+.paper-step-line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1.4s var(--ease-lux);
+}
+
+.paper-step[aria-pressed="true"] .paper-step-line::after {
+  transform: scaleX(1);
+}
+
+.paper-step .numeral {
+  color: var(--stone);
+  font-size: 18px;
+  transition: color 1.2s var(--ease-lux);
+}
+
+.paper-step[aria-pressed="true"] .numeral {
+  color: var(--gold-soft);
+}
+
+.paper-motto {
+  color: var(--stone);
+}
+
+@media (max-width: 900px) {
+  .paper {
+    display: block;
+    height: auto;
+    min-height: 0;
+    padding: var(--section-pad) var(--gutter);
+  }
+
+  .paper-stage {
+    margin-top: 48px;
+  }
+
+  .paper-frames {
+    position: relative;
+    aspect-ratio: 4 / 3;
+  }
+
+  .paper-panel {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    margin-top: 16px;
+    padding: 24px;
+  }
+
+  .paper-controls {
+    margin-top: 32px;
+  }
+
+  .paper-steps {
+    width: 100%;
+  }
+
+  .paper-motto {
+    display: none;
+  }
+}
+
+/* =============================================================================
+   17. COLLECTION
+   The signature moment: pinned, one pen render per colorway crossfading over
+   a deep gradient, names sliding through masks.
+   ========================================================================== */
+.collection {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100svh;
+  min-height: 640px;
+  padding: calc(var(--nav-height) + 32px) var(--gutter) 40px;
+  overflow: hidden;
+  background: var(--ink);
+  color: var(--ivory);
+}
+
+.collection-backdrops {
+  position: absolute;
+  inset: 0;
+}
+
+.collection-backdrop {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.2s var(--ease-lux);
+}
+
+.collection-backdrop.is-active {
+  opacity: 1;
+}
+
+.collection-backdrop[data-colorway="obsidian"] {
+  background: radial-gradient(ellipse 70% 65% at 50% 45%, var(--obsidian-to), var(--obsidian-from));
+}
+
+.collection-backdrop[data-colorway="sapphire"] {
+  background: radial-gradient(ellipse 70% 65% at 50% 45%, var(--sapphire-to), var(--sapphire-from));
+}
+
+.collection-backdrop[data-colorway="bordeaux"] {
+  background: radial-gradient(ellipse 70% 65% at 50% 45%, var(--bordeaux-to), var(--bordeaux-from));
+}
+
+.collection-backdrop[data-colorway="cognac"] {
+  background: radial-gradient(ellipse 70% 65% at 50% 45%, var(--cognac-to), var(--cognac-from));
+}
+
+.collection-header {
+  position: relative;
+  z-index: 2;
+}
+
+.collection-pens {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+/* Sits 3svh below centre so the cap clears the section label. */
+.collection-pen {
+  grid-area: 1 / 1;
+  width: auto;
+  height: 64svh;
+  margin-top: 6svh;
+  max-width: none;
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 1.6s var(--ease-lux),
+    transform 2s var(--ease-lux);
+}
+
+.collection-pen.is-active {
+  opacity: 1;
+  transform: none;
+}
+
+/* One gold light passes along the lacquer at each change: masked by the
+   active pen and remounted per colorway, so the animation replays. */
+.collection-sweep {
+  position: relative;
+  grid-area: 1 / 1;
+  height: 64svh;
+  aspect-ratio: 126 / 1479;
+  margin-top: 6svh;
+  overflow: hidden;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  mix-blend-mode: screen;
+}
+
+.collection-sweep::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    transparent 30%,
+    color-mix(in srgb, var(--gold-soft) 75%, transparent) 50%,
+    transparent 70%
+  );
+  transform: translateY(100%);
+  animation: collection-sweep 1.8s var(--ease-lux) 0.4s both;
+}
+
+@keyframes collection-sweep {
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+/* Gold light pooling beneath the nib (the nib points down). */
+.collection-reflection {
+  grid-area: 1 / 1;
+  width: 180px;
+  height: 40px;
+  transform: translateY(calc(35svh + 14px));
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    color-mix(in srgb, var(--gold) 60%, transparent),
+    transparent 72%
+  );
+  filter: blur(10px);
+}
+
+/* The colorway's name to the left of the pen, its line handwritten beneath. */
+.collection-title {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  align-self: center;
+  justify-items: start;
+  max-width: calc(50% - 80px);
+  font-family: var(--font-display);
+  font-size: clamp(34px, 5.2vw, 88px);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.collection-title-cell {
+  display: grid;
+  overflow: hidden;
+  padding-bottom: 0.12em;
+}
+
+.collection-title-text {
+  grid-area: 1 / 1;
+  transform: translateY(110%);
+  transition: transform 1.6s var(--ease-lux);
+}
+
+.collection-title-text.is-past {
+  transform: translateY(-110%);
+}
+
+.collection-title-text.is-active {
+  transform: none;
+}
+
+.collection-lines {
+  display: grid;
+  margin-top: -0.2em;
+  padding-left: 0.5em;
+  font-size: clamp(30px, 2.6vw, 44px);
+}
+
+.collection-line {
+  grid-area: 1 / 1;
+}
+
+.collection-bottom {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 24px;
+}
+
+.collection-name {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-style: italic;
+  text-align: center;
+}
+
+.collection-bottom .btn-lux {
+  justify-self: end;
+}
+
+@media (max-width: 900px) {
+  .collection {
+    min-height: 600px;
+    padding-bottom: 28px;
+  }
+
+  .collection-pen,
+  .collection-sweep {
+    height: 50svh;
+    margin-top: 12svh;
+  }
+
+  .collection-reflection {
+    transform: translateY(calc(37svh + 10px));
+  }
+
+  .collection-title {
+    align-self: start;
+    justify-items: center;
+    max-width: none;
+    margin-top: 8px;
+    font-size: clamp(32px, 9vw, 44px);
+    text-align: center;
+  }
+
+  .collection-lines {
+    padding-left: 0;
+    font-size: 30px;
+  }
+
+  .collection-bottom {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 12px;
+  }
+
+  .collection-bottom .btn-lux {
+    justify-self: center;
+  }
+}
+
+/* Gold-ringed swatches (shared by Collection and Boutique). */
+.swatches {
+  display: flex;
+  gap: 4px;
+}
+
+.swatch {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.swatch-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--hairline-ivory);
+  outline: 1px solid transparent;
+  outline-offset: 5px;
+  transition: outline-color 0.9s var(--ease-lux);
+}
+
+.swatch[aria-pressed="true"] .swatch-dot,
+.swatch:hover .swatch-dot {
+  outline-color: var(--gold);
+}
+
+.swatch-dot[data-colorway="obsidian"] {
+  background: linear-gradient(145deg, var(--obsidian-sheen), var(--obsidian-from));
+}
+
+.swatch-dot[data-colorway="sapphire"] {
+  background: linear-gradient(145deg, var(--sapphire-sheen), var(--sapphire-from));
+}
+
+.swatch-dot[data-colorway="bordeaux"] {
+  background: linear-gradient(145deg, var(--bordeaux-sheen), var(--bordeaux-from));
+}
+
+.swatch-dot[data-colorway="cognac"] {
+  background: linear-gradient(145deg, var(--cognac-sheen), var(--cognac-from));
+}
+
+/* =============================================================================
+   18. COFFRET
+   A single-line heading; the coffret on a band of its own studio grey,
+   closed then open, its contents pointed out; the journal; the list of
+   contents; the certificate. Every block is complete and static by default:
+   the open coffret with its labels, the journal open and written, the
+   signature signed. The motion hook stages them on desktop.
+   ========================================================================== */
+.coffret {
+  padding: var(--section-pad) 0;
+}
+
+.coffret-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 var(--gutter);
+  text-align: center;
+}
+
+.coffret-title {
+  margin-top: 24px;
+  font-size: clamp(30px, 3.4vw, 52px);
+  font-weight: 300;
+  line-height: 1.15;
+}
+
+.coffret-title-rule {
+  display: block;
+  width: 80px;
+  height: 1px;
+  margin-top: 32px;
+  background: var(--gold);
+}
+
+/* The stage: the photographs' own grey, blending into ivory above and below. */
+/* The highlight is barely lighter than the photographs' own grey at their
+   edges, so they melt into it rather than reading as plates. */
+.coffret-stage {
+  position: relative;
+  margin-top: 88px;
+  background: radial-gradient(46% 60% at 50% 50%, var(--studio-light), var(--studio) 100%);
+}
+
+.coffret-stage::before,
+.coffret-stage::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  height: 120px;
+  pointer-events: none;
+}
+
+.coffret-stage::before {
+  top: 0;
+  background: linear-gradient(var(--ivory), transparent);
+}
+
+.coffret-stage::after {
+  bottom: 0;
+  background: linear-gradient(transparent, var(--ivory));
+}
+
+.coffret-stage-pin {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 100svh;
+  min-height: 640px;
+  overflow: hidden;
+}
+
+.coffret-scene {
+  position: relative;
+  z-index: 2;
+  width: min(76svh, 50vw, 820px);
+  aspect-ratio: 1;
+}
+
+.coffret-photos,
+.coffret-open {
+  position: absolute;
+  inset: 0;
+}
+
+/* The photograph's edge melts into the band. A soft rectangle rather than a
+   circle: a circle wide enough to hide the edges would also dissolve the
+   corners of the lid. */
+.coffret-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  -webkit-mask:
+    linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent),
+    linear-gradient(transparent, #000 7%, #000 93%, transparent);
+  -webkit-mask-composite: source-in;
+  mask:
+    linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent) intersect,
+    linear-gradient(transparent, #000 7%, #000 93%, transparent);
+}
+
+/* A breath of white at the midpoint of the crossfade. */
+.coffret-bloom {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--light), transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.coffret-marker {
+  display: none;
+}
+
+/* Leaders: hairlines from each object to its label, in % of the scene. */
+.coffret-leaders {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.coffret-leader {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.coffret-hotspots {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+}
+
+.coffret-hotspot {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* A gold ring with a point at its centre, 44px to the pointer. */
+.coffret-dot {
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  border-radius: 50%;
+  pointer-events: auto;
+}
+
+.coffret-dot::before,
+.coffret-dot::after {
+  content: "";
+  grid-area: 1 / 1;
+  border-radius: 50%;
+}
+
+.coffret-dot::before {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--gold-soft);
+  background: color-mix(in srgb, var(--gold) 22%, transparent);
+  transition: scale 0.9s var(--ease-settle);
+}
+
+.coffret-dot::after {
+  width: 6px;
+  height: 6px;
+  background: var(--gold-soft);
+}
+
+.coffret-dot:hover::before,
+.coffret-dot:focus-visible::before,
+.coffret-dot[aria-pressed="true"]::before {
+  scale: 1.35;
+}
+
+/* Gold on the velvet and on the grey alike. */
+.coffret .coffret-dot:focus-visible {
+  outline: 2px solid var(--gold-soft);
+  outline-offset: 2px;
+}
+
+.coffret-dot-number {
+  display: none;
+}
+
+.coffret-label {
+  position: absolute;
+  top: var(--label-y);
+  width: min(270px, 21vw);
+  translate: 0 -50%;
+}
+
+.coffret-hotspot--left .coffret-label {
+  right: calc(100% + var(--label-gap));
+  text-align: right;
+}
+
+.coffret-hotspot--right .coffret-label {
+  left: calc(100% + var(--label-gap));
+}
+
+.coffret-label-title {
+  display: block;
+  color: var(--ink);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.coffret-label-line {
+  margin-top: 6px;
+  color: var(--graphite);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* The journal: two columns on ivory. */
+.journal {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--gutter);
+  max-width: 1240px;
+  margin: 120px auto 0;
+  padding: 0 var(--gutter);
+}
+
+.journal-figure {
+  position: relative;
+  aspect-ratio: 1950 / 1483;
+}
+
+.journal-closed,
+.journal-open,
+.journal-float {
+  position: absolute;
+  inset: 0;
+}
+
+.journal-closed {
+  visibility: hidden; /* the motion hook shows it first, then opens the book */
+}
+
+.journal-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.journal-shadow {
+  position: absolute;
+  right: 18%;
+  bottom: 2%;
+  left: 18%;
+  height: 10%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--shadow), transparent);
+  opacity: 0.3;
+  filter: blur(14px);
+}
+
+/* Each printed line: a band of the photograph over the clean-page plate,
+   revealed along its baseline by a soft edge at --ink (from the hook). */
+.journal-line {
+  -webkit-mask-image: linear-gradient(
+    71deg,
+    #000 calc(var(--ink, 200%) - 3%),
+    transparent var(--ink, 200%)
+  );
+  mask-image: linear-gradient(
+    71deg,
+    #000 calc(var(--ink, 200%) - 3%),
+    transparent var(--ink, 200%)
+  );
+}
+
+.journal-copy {
+  max-width: 440px;
+}
+
+.journal-title {
+  margin-top: 20px;
+  font-size: clamp(34px, 3.4vw, 52px);
+}
+
+.journal-body {
+  margin-top: 24px;
+  color: var(--umber);
+  font-size: 16px;
+}
+
+/* Contents: two columns, gold hairlines. */
+.coffret-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--gutter);
+  max-width: 1200px;
+  margin: 120px auto 0;
+  padding: 0 var(--gutter);
+}
+
+.coffret-item {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 16px;
+  padding: 28px 0;
+  border-top: 1px solid var(--rule);
+}
+
+.coffret-item:nth-last-child(-n + 2) {
+  border-bottom: 1px solid var(--rule);
+}
+
+.coffret-item-title {
+  font-size: 26px;
+  font-weight: 400;
+}
+
+.coffret-item p {
+  margin-top: 6px;
+  color: var(--umber);
+  font-size: 15px;
+}
+
+/* The certificate: an ivory card with a deckled edge on a parchment plate. */
+.certificate-block {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--gutter);
+  max-width: 1200px;
+  margin: 120px auto 0;
+  padding: clamp(32px, 5vw, 72px);
+  border-radius: var(--radius);
+  background: var(--parchment);
+  margin-inline: max(var(--gutter), calc((100% - 1200px) / 2));
+}
+
+.certificate-copy h3 {
+  margin: 12px 0;
+  font-size: 32px;
+}
+
+.certificate-copy p {
+  max-width: 360px;
+  color: var(--umber);
+  font-size: 15px;
+}
+
+/* The deckle: a rectangle roughened by turbulence, used as a mask. A
+   drop-shadow on the parent follows the torn edge. */
+.certificate {
+  --deckle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 560' preserveAspectRatio='none'%3E%3Cfilter id='d' x='-5%25' y='-5%25' width='110%25' height='110%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.09' numOctaves='3' seed='7'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='7'/%3E%3C/filter%3E%3Crect x='6' y='6' width='388' height='548' fill='%23000' filter='url(%23d)'/%3E%3C/svg%3E");
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: min(420px, 100%);
+  padding: 52px 40px 44px;
+  background: var(--ivory);
+  text-align: center;
+  -webkit-mask: var(--deckle) 0 0 / 100% 100% no-repeat;
+  mask: var(--deckle) 0 0 / 100% 100% no-repeat;
+}
+
+.certificate-block > .certificate {
+  filter: drop-shadow(0 18px 22px color-mix(in srgb, var(--ink) 16%, transparent));
+}
+
+/* Blind-embossed: the crest in the paper's own colour, lit from above-left.
+   A dark edge inside the stroke's upper side, a light one below. */
+.certificate-crest {
+  width: 56px;
+  height: 56px;
+  color: var(--parchment);
+  --crest-stroke: 1.4;
+  filter: drop-shadow(0.7px 0.9px 0 color-mix(in srgb, white 85%, transparent))
+    drop-shadow(-0.6px -0.8px 0 color-mix(in srgb, var(--umber) 45%, transparent));
+}
+
+.certificate .certificate-label {
+  margin-top: 8px;
+  color: var(--umber);
+  font-size: 12px;
+}
+
+.certificate .certificate-model {
+  font-size: 30px;
+}
+
+.certificate-signature {
+  margin-top: 4px;
+  font-size: clamp(44px, 4vw, 54px);
+  line-height: 1;
+}
+
+.certificate-ink {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  overflow: visible;
+  rotate: -4deg;
+}
+
+/* The signature crosses its line, as signatures do. */
+.certificate-rule {
+  width: 180px;
+  height: 1px;
+  margin-top: -18px;
+  background: var(--bronze);
+}
+
+.certificate-number {
+  margin-top: 8px;
+  color: var(--bronze);
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-variant-numeric: lining-nums;
+  letter-spacing: 0.14em;
+}
+
+@media (min-width: 701px) {
+  .coffret-title {
+    white-space: nowrap;
+  }
+}
+
+/* Stacked on one stage, the open coffret is the resting state; the closed
+   one (framed wider) appears only while the motion hook stages the reveal. */
+@media (min-width: 901px) {
+  .coffret-photo--closed {
+    visibility: hidden;
+  }
+}
+
+@media (max-width: 900px) {
+  /* No pin: the two photographs stacked, the hotspots a numbered list. */
+  .coffret-stage {
+    margin-top: 64px;
+    padding: 96px var(--gutter);
+  }
+
+  .coffret-stage-pin {
+    display: block;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .coffret-scene {
+    width: 100%;
+    aspect-ratio: auto;
+  }
+
+  .coffret-photos {
+    position: static;
+    display: grid;
+    gap: 8px;
+  }
+
+  .coffret-open {
+    position: relative;
+    inset: auto;
+  }
+
+  .coffret-photo {
+    position: relative;
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .coffret-marker {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    margin: -13px 0 0 -13px;
+    border: 1px solid var(--gold-soft);
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--ink) 55%, transparent);
+    color: var(--gold-soft);
+    font-family: var(--font-display);
+    font-size: 15px;
+    line-height: 1;
+  }
+
+  .coffret-leaders {
+    display: none;
+  }
+
+  .coffret-hotspots {
+    position: static;
+    display: grid;
+    gap: 0;
+    margin-top: 32px;
+  }
+
+  .coffret-hotspot {
+    position: relative;
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 12px;
+    align-items: start;
+    padding: 18px 0;
+    border-top: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+    pointer-events: auto;
+  }
+
+  .coffret-dot {
+    position: static;
+    width: 32px;
+    height: 32px;
+    margin: 2px 0 0;
+    border: 1px solid var(--gold);
+    color: var(--bronze);
+    font-family: var(--font-display);
+    font-size: 17px;
+  }
+
+  .coffret-dot::before,
+  .coffret-dot::after {
+    display: none;
+  }
+
+  .coffret-dot-number {
+    display: block;
+  }
+
+  .coffret .coffret-dot:focus-visible {
+    outline-color: var(--bronze);
+  }
+
+  .coffret-label {
+    position: static;
+    width: auto;
+    translate: none;
+  }
+
+  .coffret-hotspot--left .coffret-label {
+    text-align: left;
+  }
+
+  .coffret-label-title {
+    font-size: 22px;
+  }
+
+  .journal {
+    grid-template-columns: 1fr;
+    margin-top: 80px;
+  }
+
+  .coffret-list {
+    grid-template-columns: 1fr;
+    margin-top: 80px;
+  }
+
+  .coffret-item:nth-last-child(2) {
+    border-bottom: 0;
+  }
+
+  .certificate-block {
+    grid-template-columns: 1fr;
+    margin-top: 80px;
+    margin-inline: var(--gutter);
+  }
+
+  .certificate {
+    justify-self: center;
+    padding: 44px 24px 36px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Ink words (<InkWord>): the gold fill shown through a mask of centre-line
+   strokes. Gold on dark, bronze on ivory.
+   -------------------------------------------------------------------------- */
+.ink-word {
+  --ink-1: var(--gold-deep);
+  --ink-2: var(--gold-soft);
+  --ink-3: var(--ink-wet);
+  --ink-4: var(--gold);
+  --ink-5: var(--bronze);
+  --ink-fresh: var(--ink-wet);
+  overflow: visible;
+}
+
+.section--ivory .ink-word {
+  --ink-1: var(--bronze-deep);
+  --ink-2: var(--bronze);
+  --ink-3: var(--bronze-light);
+  --ink-4: var(--bronze-mid);
+  --ink-5: var(--bronze-dark);
+  --ink-fresh: var(--gold);
+}
+
+.ink-stop--deep {
+  stop-color: var(--ink-1);
+}
+
+.ink-stop--soft {
+  stop-color: var(--ink-2);
+}
+
+.ink-stop--pale {
+  stop-color: var(--ink-3);
+}
+
+.ink-stop--gold {
+  stop-color: var(--ink-4);
+}
+
+.ink-stop--bronze {
+  stop-color: var(--ink-5);
+}
+
+.ink-stop--light {
+  stop-color: var(--light);
+}
+
+.ink-word-stroke,
+.ink-word-wet {
+  fill: none;
+  stroke: white;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ink-word-wet {
+  stroke-opacity: 0.34;
+  visibility: hidden;
+}
+
+.ink-word-fresh {
+  fill: var(--ink-fresh);
+}
+
+/* =============================================================================
+   19. ATELIER
+   Editorial asymmetry: tall portrait, wide landscape, square, and a detail.
+   ========================================================================== */
+.atelier {
+  padding: var(--section-pad) var(--gutter);
+}
+
+.atelier-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: start;
+  column-gap: var(--gutter);
+  row-gap: 200px;
+  max-width: 1280px;
+  margin: 160px auto 0;
+}
+
+.atelier-frame {
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--obsidian);
+}
+
+.atelier-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.atelier-item--portrait {
+  grid-column: 1 / span 5;
+}
+
+.atelier-item--portrait .atelier-frame {
+  aspect-ratio: 3 / 4;
+}
+
+.atelier-item--landscape {
+  grid-column: 7 / -1;
+  margin-top: 200px;
+}
+
+.atelier-item--landscape .atelier-frame {
+  aspect-ratio: 16 / 10;
+}
+
+.atelier-item--square {
+  grid-column: 2 / span 4;
+}
+
+.atelier-item--square .atelier-frame {
+  aspect-ratio: 1;
+}
+
+.atelier-item--engraving {
+  grid-column: 7 / span 5;
+  margin-top: -80px;
+}
+
+.atelier-item--engraving .atelier-frame {
+  aspect-ratio: 4 / 3;
+}
+
+.atelier-caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+}
+
+.atelier-caption .label {
+  color: var(--gold-soft);
+}
+
+.atelier-note {
+  color: var(--stone);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-style: italic;
+}
+
+@media (max-width: 900px) {
+  .atelier-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    row-gap: 72px;
+    margin-top: 88px;
+  }
+
+  .atelier-item--portrait {
+    grid-column: 1 / span 5;
+  }
+
+  .atelier-item--landscape {
+    grid-column: 1 / -1;
+    margin-top: 0;
+  }
+
+  .atelier-item--square {
+    grid-column: 2 / -1;
+  }
+
+  .atelier-item--engraving {
+    grid-column: 1 / -1;
+    margin-top: 0;
+  }
+}
+
+/* =============================================================================
+   20. BOUTIQUE — private reservation (preview)
+   A full-height side panel; slides in from the right.
+   ========================================================================== */
+.boutique {
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: min(560px, 100vw);
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0 0 0 auto;
+  padding: 0;
+  overflow-y: auto;
+  border: 0;
+  border-left: 1px solid var(--rule);
+  background: var(--obsidian);
+  color: var(--ivory);
+  transform: translateX(100%);
+  transition:
+    transform 1.2s var(--ease-lux),
+    display 1.2s allow-discrete,
+    overlay 1.2s allow-discrete;
+}
+
+.boutique[open] {
+  transform: none;
+}
+
+@starting-style {
+  .boutique[open] {
+    transform: translateX(100%);
+  }
+}
+
+.boutique::backdrop {
+  background: color-mix(in srgb, var(--ink) 72%, transparent);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transition:
+    opacity 1.2s var(--ease-lux),
+    display 1.2s allow-discrete,
+    overlay 1.2s allow-discrete;
+}
+
+.boutique[open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  .boutique[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+.boutique-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-height: 100%;
+  padding: 24px clamp(20px, 4vw, 48px) 40px;
+}
+
+.boutique-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.boutique-badge {
+  padding: 6px 14px;
+  border: 1px solid var(--rule);
+  color: var(--gold-soft);
+}
+
+.boutique-title {
+  margin-top: -20px;
+  font-size: clamp(40px, 5vw, 56px);
+}
+
+.boutique-preview {
+  padding: 40px 24px;
+  border-radius: var(--radius);
+  background: var(--emerald);
+}
+
+.cap-preview {
+  width: 100%;
+  height: auto;
+}
+
+.cap-preview[data-colorway="obsidian"] {
+  --cap-light: var(--obsidian-sheen);
+  --cap-mid: var(--obsidian-to);
+  --cap-dark: var(--obsidian-from);
+}
+
+.cap-preview[data-colorway="sapphire"] {
+  --cap-light: var(--sapphire-sheen);
+  --cap-mid: var(--sapphire-to);
+  --cap-dark: var(--sapphire-from);
+}
+
+.cap-preview[data-colorway="bordeaux"] {
+  --cap-light: var(--bordeaux-sheen);
+  --cap-mid: var(--bordeaux-to);
+  --cap-dark: var(--bordeaux-from);
+}
+
+.cap-preview[data-colorway="cognac"] {
+  --cap-light: var(--cognac-sheen);
+  --cap-mid: var(--cognac-to);
+  --cap-dark: var(--cognac-from);
+}
+
+.cap-stop-light {
+  stop-color: var(--cap-light);
+  transition: stop-color 1s var(--ease-lux);
+}
+
+.cap-stop-mid {
+  stop-color: var(--cap-mid);
+  transition: stop-color 1s var(--ease-lux);
+}
+
+.cap-stop-dark {
+  stop-color: var(--cap-dark);
+  transition: stop-color 1s var(--ease-lux);
+}
+
+.cap-body,
+.cap-band {
+  fill: url(#cap-lacquer);
+}
+
+.cap-flutes path {
+  stroke: color-mix(in srgb, var(--ivory) 16%, transparent);
+  stroke-width: 1;
+}
+
+.cap-clip {
+  fill: none;
+  stroke: var(--parchment);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.cap-ring {
+  stroke: var(--gold-soft);
+  stroke-width: 2;
+}
+
+.cap-initials {
+  fill: var(--gold-soft);
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+}
+
+/* Hiragenda initials, ~1.1x the Roman, in gold ink. */
+.cap-initials--script {
+  fill: url(#cap-script-gold);
+  font-family: var(--font-script);
+  font-size: 38px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.engraving-styles {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.engraving-style {
+  min-width: 96px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  color: var(--stone);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  transition:
+    border-color 0.9s var(--ease-lux),
+    color 0.9s var(--ease-lux);
+}
+
+.engraving-style:hover {
+  color: var(--ivory);
+}
+
+.engraving-style[aria-pressed="true"] {
+  border-color: var(--gold);
+  color: var(--gold-soft);
+}
+
+.boutique-field {
+  display: grid;
+  gap: 12px;
+}
+
+.boutique-field .label {
+  color: var(--stone);
+}
+
+.boutique-colorway {
+  color: var(--gold-soft);
+}
+
+.boutique-optional {
+  letter-spacing: 0.12em;
+  text-transform: none;
+}
+
+.boutique-input {
+  min-height: 56px;
+  padding: 8px 0;
+  border: 0;
+  border-bottom: 1px solid var(--gold);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ivory);
+  font-family: var(--font-display);
+  font-size: 28px;
+  letter-spacing: 0.12em;
+}
+
+.boutique-input::placeholder {
+  color: var(--stone);
+  font-size: 22px;
+  letter-spacing: 0;
+}
+
+.boutique-input:focus-visible {
+  outline: none;
+  border-bottom-color: var(--gold-soft);
+  box-shadow: 0 1px 0 var(--gold-soft);
+}
+
+.boutique-hint {
+  color: var(--stone);
+  font-size: 14px;
+}
+
+.boutique-services {
+  display: grid;
+  gap: 8px;
+}
+
+.boutique-services li {
+  position: relative;
+  padding-left: 28px;
+}
+
+.boutique-services li::before {
+  content: "";
+  position: absolute;
+  top: 0.85em;
+  left: 0;
+  width: 14px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.boutique-summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-top: 24px;
+  border-top: 1px solid var(--rule);
+}
+
+.boutique-summary .label {
+  color: var(--stone);
+}
+
+.boutique-price {
+  font-size: 22px;
+  font-weight: 400;
+}
+
+.boutique-disclaimer {
+  color: var(--stone);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* =============================================================================
+   21. FOOTER
+   ========================================================================== */
+.footer {
+  overflow: hidden;
+  padding: 160px var(--gutter) 0;
+}
+
+.footer > .hairline {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+.footer-crest {
+  width: 96px;
+  height: 96px;
+  color: var(--gold-soft);
+  --crest-stroke: 0.9;
+}
+
+.footer-wordmark {
+  font-size: clamp(30px, 4vw, 52px);
+  font-weight: 400;
+}
+
+.footer-signoff {
+  font-size: clamp(28px, 2.8vw, 40px);
+  text-align: center;
+}
+
+/* LV-style: the name, enormous and faint, cut off by the bottom edge. */
+.footer-watermark {
+  margin: 96px 0 -0.2em;
+  color: color-mix(in srgb, var(--ivory) 5%, transparent);
+  font-family: var(--font-display);
+  font-size: 28vw;
+  font-weight: 300;
+  line-height: 0.8;
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+}
+
+.newsletter {
+  display: grid;
+  gap: 16px;
+  max-width: 480px;
+  margin: 96px auto;
+  text-align: center;
+}
+
+.newsletter .label {
+  color: var(--gold-soft);
+}
+
+.newsletter-field {
+  display: flex;
+  border-bottom: 1px solid var(--gold);
+}
+
+.newsletter-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 52px;
+  border: 0;
+  background: transparent;
+  color: var(--ivory);
+  font-size: 16px;
+}
+
+.newsletter-input::placeholder {
+  color: var(--stone);
+}
+
+.newsletter-input:focus-visible {
+  outline: none;
+}
+
+.newsletter-field:focus-within {
+  box-shadow: 0 1px 0 var(--gold-soft);
+}
+
+.newsletter-submit {
+  min-height: 52px;
+  padding: 0 4px 0 16px;
+  color: var(--gold-soft);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.newsletter-status {
+  min-height: 1.7em;
+  color: var(--stone);
+  font-size: 14px;
+}
+
+.footer-columns {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--gutter);
+  max-width: 1200px;
+  margin: 72px auto;
+}
+
+.footer-column-title {
+  margin-bottom: 16px;
+  color: var(--gold-soft);
+}
+
+.footer-link,
+.footer-text {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  font-size: 15px;
+  text-align: left;
+}
+
+.footer-link {
+  color: var(--ivory);
+  transition: color 0.9s var(--ease-lux);
+}
+
+.footer-link:hover {
+  color: var(--gold-soft);
+}
+
+.footer-text {
+  color: var(--stone);
+}
+
+.footer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto 48px;
+}
+
+.footer-locale {
+  display: grid;
+  gap: 8px;
+}
+
+.footer-locale .label {
+  color: var(--stone);
+}
+
+.footer-select {
+  min-width: 260px;
+  min-height: 48px;
+  padding: 0 32px 0 0;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  border-radius: 0;
+  appearance: none;
+  background:
+    linear-gradient(45deg, transparent 50%, var(--gold-soft) 50%) right 10px center / 6px 6px
+      no-repeat,
+    linear-gradient(-45deg, transparent 50%, var(--gold-soft) 50%) right 4px center / 6px 6px
+      no-repeat;
+  color: var(--ivory);
+  font-size: 15px;
+}
+
+.footer-select option {
+  background: var(--obsidian);
+  color: var(--ivory);
+}
+
+.footer-socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+}
+
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px 24px;
+  max-width: 1200px;
+  margin: 28px auto 0;
+  color: var(--stone);
+  font-size: 13px;
+}
+
+.footer-bottom .footer-link {
+  font-size: 13px;
+  min-height: 0;
+}
+
+@media (max-width: 900px) {
+  .footer {
+    padding-top: 112px;
+  }
+
+  .footer-columns {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 48px;
+  }
+
+  .footer-link,
+  .footer-text {
+    min-height: 48px;
+  }
+
+  .footer-select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .footer-locale {
+    width: 100%;
+  }
+}
+
+/* =============================================================================
+   22. LENIS
+   ========================================================================== */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* =============================================================================
+   23. REDUCED MOTION
+   The motion hook skips every scroll effect; CSS settles the rest instantly.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .hero-scroll-line,
+  .hero-guilloche,
+  .hero-shaft-light,
+  .collection-sweep::before {
+    animation: none;
+  }
+
+  /* The pen keeps only its static highlight: no sheen pass. */
+  .hero-sheen {
+    display: none;
+  }
+
+  .collection-sweep {
+    display: none;
+  }
+}
